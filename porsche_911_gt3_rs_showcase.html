@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Porsche 911 GT3 RS — Athletic in Form</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#0a0b0d',
+                        slateCard: 'rgba(22, 24, 29, 0.75)',
+                        porscheRed: '#E30613',
+                        porscheGreen: '#39FF14',
+                        porscheBlue: '#0066B1',
+                        porscheGold: '#D4AF37',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Cinzel', 'serif'],
+                        mono: ['Space Grotesk', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0b0d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262930;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #E30613;
+        }
+
+        .glass-panel {
+            background: rgba(16, 18, 22, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-panel-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-panel-hover:hover {
+            border-color: rgba(227, 6, 19, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(227, 6, 19, 0.2);
+        }
+
+        .text-glow-red {
+            text-shadow: 0 0 20px rgba(227, 6, 19, 0.6);
+        }
+
+        .text-glow-green {
+            text-shadow: 0 0 20px rgba(57, 255, 20, 0.6);
+        }
+
+        /* Speedometer gauge animation */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-obsidian text-gray-100 font-sans antialiased overflow-x-hidden" x-data="porscheApp()">
+
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 px-4 sm:px-8 py-4 transition-all duration-300">
+        <div class="max-w-7xl mx-auto glass-panel rounded-2xl px-6 py-3 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-8 h-8 rounded-full bg-porscheRed/20 border border-porscheRed/50 flex items-center justify-center font-serif font-black text-porscheRed group-hover:scale-105 transition-transform">
+                    P
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-serif font-bold tracking-[0.2em] text-sm text-white">PORSCHE</span>
+                    <span class="font-mono text-[10px] tracking-widest text-porscheRed uppercase font-bold">911 GT3 RS</span>
+                </div>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center gap-8 text-xs font-mono tracking-widest uppercase text-gray-400">
+                <a href="#overview" class="hover:text-porscheRed transition-colors">Overview</a>
+                <a href="#aerodynamics" class="hover:text-porscheRed transition-colors">Aerodynamics</a>
+                <a href="#engine" class="hover:text-porscheRed transition-colors">Performance</a>
+                <a href="#sound" class="hover:text-porscheRed transition-colors">Sound Simulator</a>
+                <a href="#customizer" class="hover:text-porscheRed transition-colors">Customizer</a>
+                <a href="#specs" class="hover:text-porscheRed transition-colors">Specs</a>
+            </nav>
+
+            <!-- CTA Button -->
+            <div class="flex items-center gap-4">
+                <button @click="openConfigModal = true" class="relative group overflow-hidden rounded-xl bg-porscheRed px-5 py-2.5 text-xs font-mono font-bold tracking-wider text-white shadow-lg shadow-porscheRed/20 transition-all hover:bg-red-700 active:scale-95">
+                    <span class="relative z-10 flex items-center gap-2">
+                        CONFIGURE <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section id="overview" class="relative min-h-screen flex items-center justify-center pt-24 pb-12 overflow-hidden">
+        <!-- Background Imagery with Parallax Overlay -->
+        <div class="absolute inset-0 z-0">
+            <img :src="activeColor.heroImage" 
+                 alt="Porsche 911 GT3 RS" 
+                 class="w-full h-full object-cover object-center transition-all duration-700 filter brightness-75 scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/40 to-obsidian/80"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-obsidian/90 via-transparent to-obsidian/90"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-6 w-full pt-12 flex flex-col justify-between min-h-[80vh]">
+            <!-- Hero Title -->
+            <div class="max-w-3xl space-y-4">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel border-porscheRed/40 text-porscheRed text-xs font-mono font-semibold tracking-widest uppercase">
+                    <span class="w-2 h-2 rounded-full bg-porscheRed animate-ping"></span>
+                    992 Generation • Motorsport Technology
+                </div>
+                <h1 class="font-serif text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white uppercase leading-none">
+                    ATHLETE IN <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-porscheRed">ATHLETIC FORM.</span>
+                </h1>
+                <p class="text-gray-300 font-sans text-base sm:text-lg max-w-2xl leading-relaxed">
+                    Engineered without compromise. Featuring active aerodynamics, a 525 PS naturally aspirated flat-six engine, and motorsport DNA straight from the Nürburgring Nordschleife.
+                </p>
+            </div>
+
+            <!-- Hero Stats Pill Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+                <div class="glass-panel glass-panel-hover p-5 rounded-2xl border-l-4 border-porscheRed">
+                    <span class="block text-xs font-mono text-gray-400 uppercase tracking-widest">Power Output</span>
+                    <div class="flex items-baseline gap-1 mt-1">
+                        <span class="font-serif text-3xl sm:text-4xl font-bold text-white">525</span>
+                        <span class="font-mono text-xs text-porscheRed uppercase font-bold">PS / 518 HP</span>
+                    </div>
+                    <span class="text-[11px] text-gray-400 mt-1 block">9,000 RPM Max Engine Speed</span>
+                </div>
+
+                <div class="glass-panel glass-panel-hover p-5 rounded-2xl border-l-4 border-porscheRed">
+                    <span class="block text-xs font-mono text-gray-400 uppercase tracking-widest">Acceleration</span>
+                    <div class="flex items-baseline gap-1 mt-1">
+                        <span class="font-serif text-3xl sm:text-4xl font-bold text-white">3.2</span>
+                        <span class="font-mono text-xs text-porscheRed uppercase font-bold">SEC (0-100 km/h)</span>
+                    </div>
+                    <span class="text-[11px] text-gray-400 mt-1 block">Launch Control Enabled</span>
+                </div>
+
+                <div class="glass-panel glass-panel-hover p-5 rounded-2xl border-l-4 border-porscheRed">
+                    <span class="block text-xs font-mono text-gray-400 uppercase tracking-widest">Top Speed</span>
+                    <div class="flex items-baseline gap-1 mt-1">
+                        <span class="font-serif text-3xl sm:text-4xl font-bold text-white">296</span>
+                        <span class="font-mono text-xs text-porscheRed uppercase font-bold">KM/H</span>
+                    </div>
+                    <span class="text-[11px] text-gray-400 mt-1 block">High Downforce Setup</span>
+                </div>
+
+                <div class="glass-panel glass-panel-hover p-5 rounded-2xl border-l-4 border-porscheRed">
+                    <span class="block text-xs font-mono text-gray-400 uppercase tracking-widest">Max Downforce</span>
+                    <div class="flex items-baseline gap-1 mt-1">
+                        <span class="font-serif text-3xl sm:text-4xl font-bold text-white">860</span>
+                        <span class="font-mono text-xs text-porscheRed uppercase font-bold">KG @ 285 km/h</span>
+                    </div>
+                    <span class="text-[11px] text-gray-400 mt-1 block">3x More Than 911 GT3</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ACTIVE AERODYNAMICS & DRS SPOTLIGHT -->
+    <section id="aerodynamics" class="py-24 px-6 relative bg-gradient-to-b from-obsidian via-zinc-950 to-obsidian">
+        <div class="max-w-7xl mx-auto space-y-12">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <span class="font-mono text-xs text-porscheRed tracking-widest uppercase font-bold">Motorsport Innovation</span>
+                    <h2 class="font-serif text-4xl sm:text-5xl font-bold text-white mt-1">ACTIVE AERODYNAMICS & DRS</h2>
+                </div>
+                <p class="text-gray-400 text-sm max-w-md">
+                    For the first time in a production Porsche, an active Drag Reduction System (DRS) and a hydraulically adjusted wing element work continuously to balance downforce and drag.
+                </p>
+            </div>
+
+            <!-- DRS Interactive Widget Container -->
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <!-- Visual Display Card -->
+                <div class="lg:col-span-8 relative rounded-3xl overflow-hidden glass-panel border-gray-800 group h-[420px] sm:h-[500px]">
+                    <img :src="drsMode === 'high' ? 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=1600&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1600&auto=format&fit=crop'" 
+                         alt="Aerodynamics" 
+                         class="w-full h-full object-cover transition-all duration-700 scale-100 group-hover:scale-105 filter brightness-90">
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-black/40"></div>
+
+                    <!-- Overlay Wing Angle Indicator -->
+                    <div class="absolute top-6 left-6 glass-panel px-4 py-2 rounded-xl border-white/10 flex items-center gap-3">
+                        <i data-lucide="wind" class="w-5 h-5" :class="drsMode === 'drs' ? 'text-porscheGreen' : 'text-porscheRed'"></i>
+                        <div>
+                            <span class="block text-[10px] font-mono text-gray-400 uppercase">Wing Angle</span>
+                            <span class="font-mono text-sm font-bold text-white" x-text="drsMode === 'high' ? '34.5° (High Downforce)' : '0.0° (DRS Open)'"></span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Metric Overlay -->
+                    <div class="absolute bottom-6 left-6 right-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div class="glass-panel p-4 rounded-xl border-white/10">
+                            <span class="text-[10px] font-mono text-gray-400 uppercase">Rear Downforce</span>
+                            <span class="block font-mono text-2xl font-bold mt-0.5" 
+                                  :class="drsMode === 'high' ? 'text-porscheRed text-glow-red' : 'text-gray-300'" 
+                                  x-text="drsMode === 'high' ? '860 kg' : '305 kg'"></span>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl border-white/10">
+                            <span class="text-[10px] font-mono text-gray-400 uppercase">Drag Coefficient</span>
+                            <span class="block font-mono text-2xl font-bold mt-0.5" 
+                                  :class="drsMode === 'drs' ? 'text-porscheGreen text-glow-green' : 'text-gray-300'" 
+                                  x-text="drsMode === 'high' ? '0.39 Cd' : '0.31 Cd'"></span>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl border-white/10 hidden sm:block">
+                            <span class="text-[10px] font-mono text-gray-400 uppercase">Airbrake Function</span>
+                            <span class="block font-mono text-sm font-bold mt-1 text-white" 
+                                  x-text="drsMode === 'high' ? 'ACTIVE ON HEAVY BRAKING' : 'READY'"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DRS Control Panel -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="glass-panel p-6 rounded-3xl space-y-6 border-gray-800">
+                        <h3 class="font-serif text-xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="sliders-horizontal" class="text-porscheRed w-5 h-5"></i> DRS Mode Switcher
+                        </h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Select a mode below to simulate the hydraulic wing actuation and front diffuser flap adjustments.
+                        </p>
+
+                        <!-- Toggle Buttons -->
+                        <div class="space-y-3">
+                            <button @click="drsMode = 'high'" 
+                                    class="w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between"
+                                    :class="drsMode === 'high' ? 'bg-porscheRed/20 border-porscheRed text-white shadow-lg shadow-porscheRed/20' : 'bg-zinc-900/50 border-gray-800 text-gray-400 hover:border-gray-700'">
+                                <div>
+                                    <span class="block text-xs font-mono font-bold tracking-wider uppercase">High Downforce Mode</span>
+                                    <span class="text-[11px] opacity-80">Maximum cornering stability & braking drag</span>
+                                </div>
+                                <div class="w-3 h-3 rounded-full" :class="drsMode === 'high' ? 'bg-porscheRed animate-pulse' : 'bg-gray-700'"></div>
+                            </button>
+
+                            <button @click="drsMode = 'drs'" 
+                                    class="w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between"
+                                    :class="drsMode === 'drs' ? 'bg-porscheGreen/20 border-porscheGreen text-white shadow-lg shadow-porscheGreen/20' : 'bg-zinc-900/50 border-gray-800 text-gray-400 hover:border-gray-700'">
+                                <div>
+                                    <span class="block text-xs font-mono font-bold tracking-wider uppercase">DRS / Low Drag Mode</span>
+                                    <span class="text-[11px] opacity-80">Wing opens for maximum straight-line speed</span>
+                                </div>
+                                <div class="w-3 h-3 rounded-full" :class="drsMode === 'drs' ? 'bg-porscheGreen animate-pulse' : 'bg-gray-700'"></div>
+                            </button>
+                        </div>
+
+                        <!-- Technical Callout -->
+                        <div class="p-4 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                            <div class="flex items-center gap-2 text-xs font-mono text-porscheRed font-bold">
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Swan-Neck Wing Mount
+                            </div>
+                            <p class="text-[11px] text-gray-400">
+                                Suspended wing blades allow clean airflow under the wing surface, increasing downforce by up to 30% without added drag penalty.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ENGINE & PERFORMANCE SPECS GRID -->
+    <section id="engine" class="py-24 px-6 relative bg-obsidian">
+        <div class="max-w-7xl mx-auto space-y-12">
+            <div class="text-center max-w-3xl mx-auto space-y-3">
+                <span class="font-mono text-xs text-porscheRed tracking-widest uppercase font-bold">Uncompromising Powertrain</span>
+                <h2 class="font-serif text-4xl sm:text-5xl font-bold text-white">4.0L HIGH-REV ATMOSPHERIC ENGINE</h2>
+                <p class="text-gray-400 text-sm">
+                    Direct derived from the 911 GT3 R racecar. Individual throttle valves, rigid valve drive, and dry sump lubrication system designed for sustained track lateral forces.
+                </p>
+            </div>
+
+            <!-- Tabbed Performance Detail Switcher -->
+            <div class="glass-panel p-2 rounded-2xl max-w-xl mx-auto flex items-center justify-between border-gray-800">
+                <template x-for="tab in ['Engine', 'Performance', 'Chassis', 'Weissach']" :key="tab">
+                    <button @click="activeTab = tab" 
+                            class="flex-1 py-2.5 rounded-xl font-mono text-xs font-bold uppercase transition-all"
+                            :class="activeTab === tab ? 'bg-porscheRed text-white shadow-md' : 'text-gray-400 hover:text-white'">
+                        <span x-text="tab"></span>
+                    </button>
+                </template>
+            </div>
+
+            <!-- Tab Content Display -->
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="glass-panel glass-panel-hover p-8 rounded-3xl border-gray-800 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-2xl bg-porscheRed/10 border border-porscheRed/30 flex items-center justify-center text-porscheRed">
+                            <i data-lucide="gauge" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-white" x-text="tabData[activeTab].title1"></h3>
+                        <p class="text-gray-400 text-xs leading-relaxed" x-text="tabData[activeTab].desc1"></p>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-gray-800 font-mono text-xl font-bold text-porscheRed" x-text="tabData[activeTab].stat1"></div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-panel glass-panel-hover p-8 rounded-3xl border-gray-800 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-2xl bg-porscheRed/10 border border-porscheRed/30 flex items-center justify-center text-porscheRed">
+                            <i data-lucide="zap" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-white" x-text="tabData[activeTab].title2"></h3>
+                        <p class="text-gray-400 text-xs leading-relaxed" x-text="tabData[activeTab].desc2"></p>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-gray-800 font-mono text-xl font-bold text-porscheRed" x-text="tabData[activeTab].stat2"></div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-panel glass-panel-hover p-8 rounded-3xl border-gray-800 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-2xl bg-porscheRed/10 border border-porscheRed/30 flex items-center justify-center text-porscheRed">
+                            <i data-lucide="shield" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-white" x-text="tabData[activeTab].title3"></h3>
+                        <p class="text-gray-400 text-xs leading-relaxed" x-text="tabData[activeTab].desc3"></p>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-gray-800 font-mono text-xl font-bold text-porscheRed" x-text="tabData[activeTab].stat3"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AUDIO ENGINE SOUND SIMULATOR -->
+    <section id="sound" class="py-24 px-6 relative bg-gradient-to-b from-obsidian via-zinc-950 to-obsidian border-y border-gray-800/50">
+        <div class="max-w-5xl mx-auto glass-panel p-8 sm:p-12 rounded-3xl border-porscheRed/20 relative overflow-hidden">
+            <!-- Background Glow -->
+            <div class="absolute -right-24 -top-24 w-96 h-96 bg-porscheRed/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-6 space-y-4">
+                    <span class="font-mono text-xs text-porscheRed tracking-widest uppercase font-bold">Interactive Experience</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white">4.0L ATMOSPHERIC SOUND EXPERIENCE</h2>
+                    <p class="text-gray-400 text-xs leading-relaxed">
+                        Experience the raw acoustic resonance of the 9,000 RPM naturally aspirated flat-six exhaust. Press and hold the accelerator pedal or move the slider to rev the engine.
+                    </p>
+
+                    <!-- RPM Gauge Display -->
+                    <div class="pt-4 flex items-center gap-6">
+                        <div>
+                            <span class="block text-[10px] font-mono text-gray-400 uppercase">Engine RPM</span>
+                            <span class="font-mono text-4xl font-bold text-white" x-text="rpm"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-mono text-gray-400 uppercase">Exhaust Valve</span>
+                            <span class="font-mono text-sm font-bold text-porscheRed uppercase" x-text="rpm > 4000 ? 'OPEN (Sport)' : 'STANDARD'"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 space-y-6">
+                    <!-- Dynamic Sound Visualizer Waveform -->
+                    <div class="h-28 bg-black/60 rounded-2xl border border-gray-800 p-4 flex items-end justify-between gap-1 overflow-hidden">
+                        <template x-for="(bar, i) in visualizerBars" :key="i">
+                            <div class="w-full bg-gradient-to-t from-porscheRed/40 to-porscheRed rounded-t transition-all duration-75"
+                                 :style="`height: ${Math.min(100, Math.max(8, (rpm / 9000) * bar * 100))}%`"></div>
+                        </template>
+                    </div>
+
+                    <!-- Rev Controls -->
+                    <div class="space-y-4">
+                        <label class="flex justify-between text-xs font-mono text-gray-400">
+                            <span>IDLE (1,000 RPM)</span>
+                            <span class="text-porscheRed font-bold">REDLINE (9,000 RPM)</span>
+                        </label>
+                        
+                        <input type="range" min="1000" max="9000" step="100" x-model="rpm" @input="updateAudio()" 
+                               class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-porscheRed">
+
+                        <div class="flex gap-4">
+                            <button @mousedown="startRev()" @mouseup="stopRev()" @mouseleave="stopRev()"
+                                    @touchstart.prevent="startRev()" @touchend.prevent="stopRev()"
+                                    class="flex-1 py-4 rounded-xl bg-porscheRed text-white font-mono text-xs font-bold tracking-widest uppercase hover:bg-red-700 active:scale-95 transition-all shadow-lg shadow-porscheRed/20 flex items-center justify-center gap-2">
+                                <i data-lucide="flame" class="w-4 h-4"></i> HOLD TO REV ENGINE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTERACTIVE COLOR SELECTOR / CUSTOMIZER -->
+    <section id="customizer" class="py-24 px-6 relative bg-obsidian">
+        <div class="max-w-7xl mx-auto space-y-12">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <span class="font-mono text-xs text-porscheRed tracking-widest uppercase font-bold">Personalization</span>
+                    <h2 class="font-serif text-4xl sm:text-5xl font-bold text-white">EXTERIOR CONFIGURATOR</h2>
+                </div>
+                <p class="text-gray-400 text-sm max-w-md">
+                    Choose from signature Porsche motorsport color combinations featuring contrasting magnesium forged wheels and decal accents.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <!-- Interactive Preview Image -->
+                <div class="lg:col-span-8 glass-panel p-4 rounded-3xl border-gray-800 relative group overflow-hidden h-[380px] sm:h-[480px]">
+                    <img :src="activeColor.image" 
+                         :alt="activeColor.name" 
+                         class="w-full h-full object-cover rounded-2xl transition-all duration-700">
+                    
+                    <div class="absolute bottom-8 left-8 glass-panel px-6 py-3 rounded-2xl border-white/10">
+                        <span class="block text-[10px] font-mono text-gray-400 uppercase">Selected Exterior</span>
+                        <span class="font-serif text-xl font-bold text-white" x-text="activeColor.name"></span>
+                        <span class="block text-xs text-porscheRed font-mono font-bold mt-0.5" x-text="activeColor.wheel"></span>
+                    </div>
+                </div>
+
+                <!-- Palette Selector Controls -->
+                <div class="lg:col-span-4 space-y-4">
+                    <span class="block text-xs font-mono text-gray-400 uppercase tracking-widest">Select Paint Finish</span>
+
+                    <div class="space-y-3">
+                        <template x-for="color in colors" :key="color.id">
+                            <button @click="activeColor = color" 
+                                    class="w-full p-4 rounded-2xl glass-panel border transition-all flex items-center justify-between text-left"
+                                    :class="activeColor.id === color.id ? 'border-porscheRed bg-porscheRed/10' : 'border-gray-800 hover:border-gray-700'">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-8 h-8 rounded-full border border-white/20 shadow-inner" :style="`background-color: ${color.hex}`"></div>
+                                    <div>
+                                        <span class="block font-serif font-bold text-white text-sm" x-text="color.name"></span>
+                                        <span class="text-[11px] text-gray-400 font-mono" x-text="color.wheel"></span>
+                                    </div>
+                                </div>
+                                <i data-lucide="check" class="w-5 h-5 text-porscheRed" x-show="activeColor.id === color.id"></i>
+                            </button>
+                        </template>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-zinc-900/50 border border-gray-800 text-xs text-gray-400 space-y-2">
+                        <span class="font-bold text-white block">Weissach Package Included Options:</span>
+                        <p class="text-[11px] leading-relaxed">Exposed carbon-weave finish on front lid, roof, rear wing, and top shells of exterior mirrors.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- POSTER GALLERY & LIGHTBOX -->
+    <section class="py-24 px-6 relative bg-gradient-to-b from-obsidian via-zinc-950 to-obsidian">
+        <div class="max-w-7xl mx-auto space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <span class="font-mono text-xs text-porscheRed tracking-widest uppercase font-bold">Visual Excellence</span>
+                <h2 class="font-serif text-4xl sm:text-5xl font-bold text-white">THE GT3 RS GALLERY</h2>
+                <p class="text-gray-400 text-sm">Click any high-resolution image to inspect details in full-screen view.</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="(poster, idx) in posters" :key="idx">
+                    <div @click="openPoster(poster)" 
+                         class="glass-panel glass-panel-hover rounded-3xl overflow-hidden group cursor-pointer relative h-80">
+                        <img :src="poster.url" :alt="poster.title" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
+                            <span class="text-[10px] font-mono text-porscheRed uppercase font-bold" x-text="poster.subtitle"></span>
+                            <h3 class="font-serif text-lg font-bold text-white" x-text="poster.title"></h3>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </section>
+
+    <!-- TECHNICAL SPECIFICATIONS TABLE -->
+    <section id="specs" class="py-24 px-6 relative bg-obsidian">
+        <div class="max-w-5xl mx-auto space-y-12">
+            <div class="text-center space-y-3">
+                <span class="font-mono text-xs text-porscheRed tracking-widest uppercase font-bold">Data Sheet</span>
+                <h2 class="font-serif text-4xl font-bold text-white">TECHNICAL SPECIFICATIONS</h2>
+            </div>
+
+            <div class="glass-panel rounded-3xl overflow-hidden border-gray-800">
+                <table class="w-full text-left text-xs sm:text-sm font-mono">
+                    <thead class="bg-zinc-900/80 text-gray-400 uppercase text-[10px] tracking-widest border-b border-gray-800">
+                        <tr>
+                            <th class="p-4 sm:p-6">Specification Parameter</th>
+                            <th class="p-4 sm:p-6 text-porscheRed">Porsche 911 GT3 RS (992)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800/60 text-gray-300">
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="p-4 sm:p-6 font-sans font-semibold text-white">Engine Architecture</td>
+                            <td class="p-4 sm:p-6">4.0-Liter Naturally Aspirated 6-Cylinder Boxer Engine</td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="p-4 sm:p-6 font-sans font-semibold text-white">Horsepower Output</td>
+                            <td class="p-4 sm:p-6">525 PS (386 kW) @ 8,500 RPM</td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="p-4 sm:p-6 font-sans font-semibold text-white">Max Torque</td>
+                            <td class="p-4 sm:p-6">465 Nm @ 6,300 RPM</td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="p-4 sm:p-6 font-sans font-semibold text-white">Transmission</td>
+                            <td class="p-4 sm:p-6">7-Speed Porsche Doppelkupplung (PDK) with Short Ratios</td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="p-4 sm:p-6 font-sans font-semibold text-white">Curb Weight (DIN)</td>
+                            <td class="p-4 sm:p-6">1,450 kg (Weissach Package)</td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="p-4 sm:p-6 font-sans font-semibold text-white">Power-to-Weight Ratio</td>
+                            <td class="p-4 sm:p-6">2.76 kg / PS</td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="p-4 sm:p-6 font-sans font-semibold text-white">Nürburgring Nordschleife Lap Time</td>
+                            <td class="p-4 sm:p-6 font-bold text-porscheRed">6:49.328 min (Official Time)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER CTA -->
+    <footer class="py-16 border-t border-gray-800 text-center relative bg-black/60">
+        <div class="max-w-7xl mx-auto px-6 space-y-6">
+            <div class="w-12 h-12 rounded-full bg-porscheRed/20 border border-porscheRed/50 flex items-center justify-center font-serif font-black text-porscheRed mx-auto text-xl">
+                P
+            </div>
+            <h3 class="font-serif text-2xl font-bold text-white tracking-widest uppercase">PORSCHE 911 GT3 RS</h3>
+            <p class="text-xs font-mono text-gray-500 max-w-md mx-auto">
+                Official interactive product presentation model. All specifications derived from Porsche AG official motorsport technical data.
+            </p>
+            <div class="pt-6 text-[10px] font-mono text-gray-600 uppercase tracking-widest">
+                © 2026 Porsche AG — All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- POSTER LIGHTBOX MODAL -->
+    <div x-show="activePosterModal" x-transition.opacity class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-6" x-cloak>
+        <div class="relative max-w-5xl w-full glass-panel rounded-3xl overflow-hidden border-gray-800" @click.outside="activePosterModal = false">
+            <button @click="activePosterModal = false" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-porscheRed transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <img :src="selectedPoster.url" :alt="selectedPoster.title" class="w-full max-h-[75vh] object-cover">
+            <div class="p-6 bg-obsidian flex justify-between items-center">
+                <div>
+                    <span class="text-xs font-mono text-porscheRed uppercase font-bold" x-text="selectedPoster.subtitle"></span>
+                    <h3 class="font-serif text-xl font-bold text-white" x-text="selectedPoster.title"></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIGURATION MODAL -->
+    <div x-show="openConfigModal" x-transition.opacity class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-6" x-cloak>
+        <div class="relative max-w-lg w-full glass-panel p-8 rounded-3xl border-gray-800 space-y-6" @click.outside="openConfigModal = false">
+            <button @click="openConfigModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="text-center space-y-2">
+                <span class="font-mono text-xs text-porscheRed uppercase font-bold">Porsche Code Reservation</span>
+                <h3 class="font-serif text-2xl font-bold text-white">RESERVE YOUR ALLOTMENT</h3>
+                <p class="text-xs text-gray-400">Connect with your official Porsche Center to finalize your 911 GT3 RS allocation.</p>
+            </div>
+
+            <form @submit.prevent="openConfigModal = false; alert('Thank you! Your allocation enquiry has been registered with Porsche Motorsport.')" class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-mono text-gray-400 uppercase mb-1">Full Name</label>
+                    <input type="text" required placeholder="Dr. Ferdinand Porsche" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-gray-800 text-sm text-white focus:outline-none focus:border-porscheRed">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-mono text-gray-400 uppercase mb-1">Email Address</label>
+                    <input type="email" required placeholder="ferdinand@porsche.de" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-gray-800 text-sm text-white focus:outline-none focus:border-porscheRed">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-mono text-gray-400 uppercase mb-1">Preferred Center</label>
+                    <select class="w-full px-4 py-3 rounded-xl bg-black/50 border border-gray-800 text-sm text-white focus:outline-none focus:border-porscheRed">
+                        <option>Porsche Experience Center Stuttgart</option>
+                        <option>Porsche Center Los Angeles</option>
+                        <option>Porsche Center Silverstone</option>
+                        <option>Porsche Center Tokyo</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-4 rounded-xl bg-porscheRed text-white font-mono text-xs font-bold uppercase tracking-widest hover:bg-red-700 transition-all">
+                    Submit Reservation Interest
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ALPINE LOGIC & AUDIO SYNTHESIZER -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('porscheApp', () => ({
+                drsMode: 'high',
+                activeTab: 'Engine',
+                rpm: 1000,
+                revInterval: null,
+                activePosterModal: false,
+                openConfigModal: false,
+                selectedPoster: {},
+                audioCtx: null,
+                oscillator: null,
+                gainNode: null,
+
+                visualizerBars: [0.3, 0.5, 0.8, 0.4, 0.9, 0.6, 0.7, 0.3, 0.8, 0.5, 0.9, 0.4, 0.7, 0.6],
+
+                colors: [
+                    {
+                        id: 'ice',
+                        name: 'Ice Grey Metallic',
+                        wheel: 'Pyro Red Magnesium Wheels',
+                        hex: '#d1d5db',
+                        heroImage: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=1600&auto=format&fit=crop',
+                        image: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=1600&auto=format&fit=crop'
+                    },
+                    {
+                        id: 'blue',
+                        name: 'Shark Blue',
+                        wheel: 'Satin Dark Silver Wheels',
+                        hex: '#0066B1',
+                        heroImage: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1600&auto=format&fit=crop',
+                        image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1600&auto=format&fit=crop'
+                    },
+                    {
+                        id: 'red',
+                        name: 'Guards Red',
+                        wheel: 'Satin Black Wheels',
+                        hex: '#E30613',
+                        heroImage: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=1600&auto=format&fit=crop',
+                        image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=1600&auto=format&fit=crop'
+                    }
+                ],
+
+                activeColor: null,
+
+                tabData: {
+                    Engine: {
+                        title1: 'Individual Throttle Valves',
+                        desc1: 'Ensures instantaneous throttle response with precise fuel air metering per cylinder.',
+                        stat1: '6 Throttle Valves',
+                        title2: '9,000 RPM Redline',
+                        desc2: 'Rigid valve drive with DLC coated rocker arms engineered for extreme endurance.',
+                        stat2: '9,000 RPM Max',
+                        title3: 'Dry Sump Lubrication',
+                        desc3: 'Seven suction stages supply oil reliably even under maximum lateral track forces.',
+                        stat3: 'Oil Tank Direct-Mount'
+                    },
+                    Performance: {
+                        title1: '0-100 km/h Launch',
+                        desc1: 'Optimized PDK launch control launches the car with zero traction lag.',
+                        stat1: '3.2 Seconds',
+                        title2: 'Top Speed',
+                        desc2: 'Maximum speed achieved with high downforce track configuration.',
+                        stat2: '296 km/h',
+                        title3: 'Nordschleife Lap',
+                        desc3: 'Driven by Jörg Bergmeister under official timing supervision.',
+                        stat3: '6:49.328 Min'
+                    },
+                    Chassis: {
+                        title1: 'PASM Steering Controls',
+                        desc1: 'Adjust bound and rebound damping independently via 4 steering wheel mode dials.',
+                        stat1: 'Multi-Stage PASM',
+                        title2: 'Double-Wishbone Front',
+                        desc2: 'Teardrop profile suspension arms generate up to 40 kg downforce at top speed.',
+                        stat2: 'Aero Profiles',
+                        title3: 'PTV Plus',
+                        desc3: 'Porsche Torque Vectoring Plus with electronically controlled rear differential lock.',
+                        stat3: 'Dynamic E-Diff'
+                    },
+                    Weissach: {
+                        title1: 'Carbon Fiber Weave',
+                        desc1: 'Front lid, roof, rear wing top shell, and mirror caps finished in visible carbon.',
+                        stat1: '-15 kg Savings',
+                        title2: 'Magnesium Forged Wheels',
+                        desc2: 'Optional forged magnesium wheels cut unsprung weight drastically for rapid turn-in.',
+                        stat2: '8 kg Unsprung Reduction',
+                        title3: 'Carbon Roll Cage',
+                        desc3: 'Motorsport derived carbon fiber rollover protection structure inside cockpit.',
+                        stat3: 'FIA Inspired'
+                    }
+                },
+
+                posters: [
+                    {
+                        title: 'Nordschleife Attack',
+                        subtitle: 'Track Testing',
+                        url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop'
+                    },
+                    {
+                        title: 'Swan-Neck Aerodynamics',
+                        subtitle: 'Active Wing Unit',
+                        url: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=1200&auto=format&fit=crop'
+                    },
+                    {
+                        title: 'Weissach Carbon Cockpit',
+                        subtitle: 'Interior Craft',
+                        url: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=1200&auto=format&fit=crop'
+                    }
+                ],
+
+                init() {
+                    this.activeColor = this.colors[0];
+                    lucide.createIcons();
+                },
+
+                openPoster(poster) {
+                    this.selectedPoster = poster;
+                    this.activePosterModal = true;
+                },
+
+                startRev() {
+                    if (this.revInterval) clearInterval(this.revInterval);
+                    this.initAudio();
+                    this.revInterval = setInterval(() => {
+                        if (this.rpm < 9000) {
+                            this.rpm += 200;
+                            this.updateAudio();
+                        }
+                    }, 20);
+                },
+
+                stopRev() {
+                    if (this.revInterval) clearInterval(this.revInterval);
+                    this.revInterval = setInterval(() => {
+                        if (this.rpm > 1000) {
+                            this.rpm -= 150;
+                            this.updateAudio();
+                        } else {
+                            this.rpm = 1000;
+                            this.stopAudio();
+                            clearInterval(this.revInterval);
+                        }
+                    }, 30);
+                },
+
+                initAudio() {
+                    if (!this.audioCtx) {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        this.audioCtx = new AudioContext();
+                    }
+                    if (!this.oscillator) {
+                        this.oscillator = this.audioCtx.createOscillator();
+                        this.gainNode = this.audioCtx.createGain();
+                        this.oscillator.type = 'sawtooth';
+                        this.oscillator.connect(this.gainNode);
+                        this.gainNode.connect(this.audioCtx.destination);
+                        this.gainNode.gain.value = 0.05;
+                        this.oscillator.start();
+                    }
+                },
+
+                updateAudio() {
+                    if (this.oscillator && this.audioCtx) {
+                        // Calculate engine pitch frequency based on RPM
+                        const freq = (this.rpm / 60) * 3; // 6-cylinder fundamental engine note
+                        this.oscillator.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+                    }
+                },
+
+                stopAudio() {
+                    if (this.oscillator) {
+                        this.oscillator.stop();
+                        this.oscillator.disconnect();
+                        this.oscillator = null;
+                    }
+                }
+            }));
+        });
+    </script>
+</body>
+</html>
