@@ -33,7 +33,7 @@
     msgs: [
       {
         role: 'ai',
-        text: '👋 Welcome! Tell me what changes you\'d like on this Porsche 911 GT3 RS website and I\'ll take care of everything — opening a GitHub issue, writing the code, verifying it, and creating a pull request. Once you approve and merge it, the changes go live automatically.',
+        text: '👋 Welcome! Describe the changes you\'d like to make to this Porsche 911 GT3 RS website and I will get them done.',
         time: _ts()
       }
     ]
@@ -432,8 +432,8 @@
     S.working = true;
     renderMsgs();
 
-    // Immediate acknowledgement
-    msg('ai', "Thanks! I've received your request. I'm now opening a GitHub issue, writing the code, verifying it, and creating a pull request — all in the background. I'll notify you here once the changes are live. ✨");
+    // Immediate acknowledgement — simply thank the user
+    msg('ai', "Thank you for the feedback! We're processing your request and will notify you as soon as the changes are live.");
 
     if (!S.online) {
       // Offline demo
@@ -538,7 +538,10 @@
       // ── USER-VISIBLE TERMINAL EVENTS ──
       es.addEventListener('website_live', () => {
         closeSSE();
-        handleTerminal('COMPLETED', '');
+        msg('ai', '✅ Your changes have been merged and are now live! Reloading website to show updates...', 'ok');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1800);
       });
 
       es.addEventListener('workflow_failed', (e) => {
@@ -551,16 +554,6 @@
       es.addEventListener('workflow_cancelled', () => {
         closeSSE();
         handleTerminal('CANCELLED', '');
-      });
-
-      // ── workflow_completed fires when PR is created & coding job done ──
-      // We wait for website_live (post-merge sync) but fall back after 60s if it never comes
-      es.addEventListener('workflow_completed', () => {
-        if (!S.working) return;
-        // Give sync service 60 s to emit website_live
-        S.sseTick = setTimeout(() => {
-          if (S.working) { closeSSE(); handleTerminal('COMPLETED', ''); }
-        }, 60000);
       });
 
       // Safety timeout
@@ -602,7 +595,10 @@
   function handleTerminal(status, detail) {
     setIdle();
     if (status === 'COMPLETED') {
-      msg('ai', '✅ Your changes have been implemented, merged, and are now live on the website!', 'ok');
+      msg('ai', '✅ Your changes have been merged and are now live! Reloading website to show updates...', 'ok');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1800);
     } else if (status === 'CANCELLED') {
       msg('ai', 'Request stopped. Feel free to describe a new change whenever you\'re ready.');
     } else {
